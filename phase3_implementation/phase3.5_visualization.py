@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from tkinter import messagebox
 
 class RectilinearMotionApp:
     def __init__(self, root):
@@ -184,6 +185,34 @@ class RectilinearMotionApp:
         y = y0 + vy * t + 0.5 * ay * t**2
         
         return x, y, t
+    
+    """
+    Побудова траєкторії на графіку
+    Фаза 3.5: Модуль візуалізації графіку
+    """
+    def plot_trajectory(self):
+        is_valid, message = self.validate_input()
+        if not is_valid:
+            messagebox.showerror("Помилка введення", message)
+            return
+    
+        try:
+            x, y, t = self.calculate_trajectory()
+            color_name = self.color_var.get()
+            color = self.colors.get(color_name, "blue")
+        
+            for line in self.ax.lines:
+                line.remove()
+        
+            self.ax.plot(x, y, color=color, linewidth=2, label='Траєкторія')
+            self.ax.plot(x[0], y[0], 'go', markersize=8, label=f'Початок ({x[0]:.2f}, {y[0]:.2f})')
+            self.ax.plot(x[-1], y[-1], 'ro', markersize=8, label=f'Кінець ({x[-1]:.2f}, {y[-1]:.2f})')
+            
+            self.ax.legend()
+            self.canvas.draw()
+        
+        except Exception as e:
+            messagebox.showerror("Помилка обчислення", f"Сталася помилка: {str(e)}")
 
 if __name__ == "__main__":
     root = tk.Tk()
